@@ -57,7 +57,7 @@ add_phase_sst <- function(df, .col) {
                       between(dm1, phases[[3, 1]], phases[[3, 2]]) ~ "Phase-3",
                       between(dm1, phases[[4, 1]], phases[[4, 2]]) ~ "Phase-4",
                       TRUE ~ NA_character_),
-                  sst = floor((SST_mean + tol) / isst0) * isst0) %>%
+                  sst = floor((SSTmean + tol) / isst0) * isst0) %>%
     dplyr::select(-dm1)
 }
 ################################################################################
@@ -87,7 +87,7 @@ d0 <-
     dplyr::filter(year2 %in% !!year0, section %in% !!sects) %>%
     tidyr::replace_na(replace = list(value = 0)) %>%
     dplyr::filter(value > 0) %>%
-    dplyr::mutate(sst = floor((SST_mean + tol) / isst0) * isst0) %>%
+    dplyr::mutate(sst = floor((SSTmean + tol) / isst0) * isst0) %>%
     dplyr::group_by(species, sst) %>%
     dplyr::summarise(count = sum(Nrec, na.rm = TRUE), .groups = "drop_last") %>%
     dplyr::mutate(rFreq = count / sum(count, na.rm = TRUE),
@@ -99,9 +99,9 @@ d0 <-
 d0a <- 
     ed %>% conv2long() %>% 
     dplyr::select(-year) %>%
-    dplyr::filter(year2 %in% !!year0, section %in% !!sects, !is.na(SST_mean)) %>% 
+    dplyr::filter(year2 %in% !!year0, section %in% !!sects, !is.na(SSTmean)) %>% 
     add_phase_sst(.col = year2) %>%
-    dplyr::mutate(sst = floor((SST_mean + tol) / isst0) * isst0) %>%
+    dplyr::mutate(sst = floor((SSTmean + tol) / isst0) * isst0) %>%
     dplyr::group_by(species, sst) %>%
     dplyr::summarise(count = sum(Nrec, na.rm = TRUE), .groups = "drop_last") %>%
     dplyr::mutate(rFreq2 = count / sum(count, na.rm = TRUE)) %>%
@@ -193,7 +193,7 @@ year1 <- 1978:2020
 nlow1 <- 10
 # ------------------------------------------------------------------------------
 
-range(ed$SST_mean, na.rm = TRUE)
+range(ed$SSTmean, na.rm = TRUE)
 floor(c(35.1, 35.3, 35.5, 35.8) / (15/60)) * (15/60)
 
 ## Positive data (Sample size on egg collected)
@@ -216,7 +216,7 @@ d1 <-
 ## Effort data (Sample size at each sst intervals)
 d1a <- 
     ed %>% conv2long() %>%
-    dplyr::filter(year2 %in% !!year1, !is.na(SST_mean)) %>%
+    dplyr::filter(year2 %in% !!year1, !is.na(SSTmean)) %>%
     add_phase_sst(.col = year2) %>%
     dplyr::select(phase, species, sst, Nrec) %>%
     dplyr::group_by(phase, species, sst) %>%
@@ -475,11 +475,11 @@ levels(d20$phase)
 
 d10f %>% filter(phase == "TheEntire", roll_STI > 0) %>% group_by(species) %>% slice_head()
 
-alowlim <- ed %>% filter(Atep > 0) %>% slice_min(SST_mean) %>% as.data.frame()
-alowlim$SST_mean
+alowlim <- ed %>% filter(Atep > 0) %>% slice_min(SSTmean) %>% as.data.frame()
+alowlim$SSTmean
 
-slowlim <- ed %>% filter(Step > 0) %>% slice_min(SST_mean) %>% as.data.frame()
-slowlim$SST_mean
+slowlim <- ed %>% filter(Step > 0) %>% slice_min(SSTmean) %>% as.data.frame()
+slowlim$SSTmean
 
 tmpd <- d20 %>%
     dplyr::filter(roll_STI >= 1) %>%
