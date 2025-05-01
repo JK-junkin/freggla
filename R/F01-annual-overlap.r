@@ -3,7 +3,7 @@ getwd()
 options(width = 80, max.print = 1500)
 
 # install.packages("needs")
-needs::needs(tidyverse, foreach, RColorBrewer, openxlsx)
+needs::needs(tidyverse, gginnards, foreach, RColorBrewer, openxlsx)
 
 outd <- "path/to/your/output/folder"
 
@@ -40,7 +40,7 @@ xtabs( ~ species + year2, data = d0)
 d <-
     ed %>%
     tidyr::replace_na(replace = list(value = 0)) %>%
-    tidyr::pivot_wider(names_from = "species", values_from = "value") %>%
+    tidyr::pivot_wider(names_from = "species", values_from = "value", values_fn = sum) %>%
     dplyr::rename(a = Anchovy, s = Sardine) %>%
     dplyr::mutate(aps   = a/s, #) %>% dplyr::pull(aps) %>% unique
                   asctg = dplyr::case_when(aps == Inf             ~ "A-posi",

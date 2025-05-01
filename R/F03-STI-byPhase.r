@@ -32,7 +32,6 @@ phases <- tibble::tribble(
 ## temporary helper ------------------------------------------------------------
 conv2long <- function(df) {
     df %>%
-    dplyr::select(-Srec) %>%
     tidyr::pivot_longer(cols = c(ends_with("tep"))) %>%
     dplyr::mutate(species = stringr::str_extract(name, "^.+(?=tep)"),
                   dattype = dplyr::if_else(!is.na(species),
@@ -84,7 +83,7 @@ sects <- as.character(c(1:11))
 d0 <- 
     ed %>% conv2long() %>%
     dplyr::select(-year) %>%
-    dplyr::filter(year2 %in% !!year0, section %in% !!sects) %>%
+    dplyr::filter(year2 %in% !!year0) %>%
     tidyr::replace_na(replace = list(value = 0)) %>%
     dplyr::filter(value > 0) %>%
     dplyr::mutate(sst = floor((SSTmean + tol) / isst0) * isst0) %>%
@@ -99,7 +98,7 @@ d0 <-
 d0a <- 
     ed %>% conv2long() %>% 
     dplyr::select(-year) %>%
-    dplyr::filter(year2 %in% !!year0, section %in% !!sects, !is.na(SSTmean)) %>% 
+    dplyr::filter(year2 %in% !!year0, !is.na(SSTmean)) %>% 
     add_phase_sst(.col = year2) %>%
     dplyr::mutate(sst = floor((SSTmean + tol) / isst0) * isst0) %>%
     dplyr::group_by(species, sst) %>%
