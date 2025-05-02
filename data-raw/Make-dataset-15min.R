@@ -108,6 +108,8 @@ g1 <-
 library(dplyr)
 library(scales) # for rescale()
 
+LNPmousearea <- (0.45 / 2)^2 * pi
+
 # Set years and months
 years <- 1978:(1978 + 42)
 months <- 1:12
@@ -123,8 +125,8 @@ n_per_year <- c(seq(3000, 3200, length.out = half_year),
 rep(3200, n_years - half_year))
 
 # Annual trends of mean values for observation1 and observation2 (10-year cycles)
-mean_per_year_obs1 <- 40 + 3 * sin(2 * pi * (years - 1978) / 40)
-mean_per_year_obs2 <- 40 + 3 * sin(2 * pi * (years - 1978) / 40 + pi)
+mean_per_year_obs1 <- 40 + 30 * sin(2 * pi * (years - 1978) / 40)      # sardine
+mean_per_year_obs2 <- 60 +  3 * sin(2 * pi * (years - 1978) / 40 + pi) # anchovy
 mean_per_year_obs3 <- rescale(mean_per_year_obs2, to = c(25, 32)) # max + 5
 
 # Annual trends of zero probabilities (inverse trend)
@@ -269,8 +271,8 @@ spdata[lat == 41.25 & lon == 133.25, ]
 Egg15min <- dplyr::inner_join(tsdata, spdata, by = c("lon", "lat")) %>%
     dplyr::filter(!is.na(area)) %>%
     dplyr::relocate(year, month, lat, lon, area, Nrec) %>%
-    dplyr::mutate(obs = obs * area,
-                  obs2 = obs2 * area) %>%
+    dplyr::mutate(obs = obs * area / LNPmousearea,
+                  obs2 = obs2 * area / LNPmousearea) %>%
     dplyr::rename(Long = lon, Lati = lat, Sardine_Egg = obs,
                   Anchovy_Egg = obs2, SSTmean = obs3)
 nrow(Egg15min)
@@ -285,4 +287,5 @@ head(Egg15min)
 # 5 1978     1 34.50 144.00 638110327    2           0           0  13.437
 # 6 1978     1 29.25 134.50 676690422    0           0 23007474355  14.802
 
-save(Egg15min, file = "../data/Egg15min.Rda")
+save(Egg15min, file = "../data/Egg15min.Rda") # Example (dummy) data
+write.csv(head(Egg15min, n = 20), file = "../data-raw/Egg15min-head.csv")
